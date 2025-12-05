@@ -1,10 +1,31 @@
 {
   "name": "react-dnd-board",
-  "private": true,
+  "private": false,
   "version": "0.0.1",
+  "description": "基于 @hello-pangea/dnd 的 React 拖拽组件库，提供开箱即用的面板和列表组件",
+  "keywords": [
+    "react",
+    "drag-and-drop",
+    "dnd",
+    "kanban",
+    "board",
+    "list",
+    "hello-pangea"
+  ],
+  "author": "Nacho.L",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "homepage": "",
+  "bugs": {},
   "type": "module",
   "files": [
-    "dist"
+    "dist/*.js",
+    "dist/*.css",
+    "dist/*.d.ts",
+    "README.md"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -47,7 +68,7 @@
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
-    "@vitest/ui": "^4.0.14",
+    "@vitest/ui": "^4.0.15",
     "ahooks": "^3.9.6",
     "babel-plugin-react-compiler": "^1.0.0",
     "clsx": "^2.1.1",
@@ -57,16 +78,16 @@
     "fast-check": "^4.3.0",
     "globals": "^16.5.0",
     "jsdom": "^27.2.0",
-    "prettier": "^3.6.2",
-    "prettier-plugin-tailwindcss": "^0.7.1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "prettier": "^3.7.4",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.17",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.46.4",
+    "typescript-eslint": "^8.48.1",
     "unplugin-dts": "^1.0.0-beta.6",
-    "vite": "^7.2.4",
-    "vitest": "^4.0.14"
+    "vite": "^7.2.6",
+    "vitest": "^4.0.15"
   }
 }
