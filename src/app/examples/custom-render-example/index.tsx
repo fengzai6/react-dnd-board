@@ -1,18 +1,41 @@
 import { DndBoard } from "@/lib/components/dnd-board";
-import { ExampleSection } from "../components/ExampleSection";
-import { basicBoardData } from "../data/mockData";
+import { ExampleSection } from "../../components/example-section";
+import { basicBoardData } from "../../data/mock-data";
+
+const CODE = `import { DndBoard } from "@/lib/components/dnd-board";
+
+export function CustomRenderExample() {
+  return (
+    <DndBoard
+      initialLists={basicBoardData}
+      renderListHeader={(list) => (
+        <div className="gradient-header">
+          <h3>{list.title}</h3>
+          <span>{list.items?.length || 0} 项</span>
+        </div>
+      )}
+      renderItem={(item) => (
+        <div className="custom-item">
+          <p>{item.content}</p>
+          <span>
+            {item.priority === "high" ? "🔴" : 
+             item.priority === "medium" ? "🟡" : "🟢"}
+          </span>
+        </div>
+      )}
+    />
+  );
+}`;
 
 export function CustomRenderExample() {
   return (
     <ExampleSection
-      title="5. 自定义渲染"
+      title="自定义渲染"
       description="通过 renderListHeader 和 renderItem 完全自定义列表和项目的外观"
+      codePath="examples/custom-render-example"
+      code={CODE}
     >
       <div className="rdb:space-y-4">
-        <div className="rdb:rounded rdb:bg-pink-50 rdb:p-4 rdb:text-sm rdb:text-pink-800">
-          <strong>特点：</strong>灵活的渲染函数，可以实现任意样式和交互
-        </div>
-
         <DndBoard
           initialLists={basicBoardData}
           renderListHeader={(list) => (

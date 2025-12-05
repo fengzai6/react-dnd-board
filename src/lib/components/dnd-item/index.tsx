@@ -11,7 +11,7 @@ export type DndItemProps<I extends object> = {
   index: number;
   className?: string | ((isDragging: boolean) => string);
   style?: React.CSSProperties;
-  enableDrag?: boolean;
+  enableDrag?: boolean | ((item: DndItemType<I>) => boolean);
 } & (
   | {
       useCustomDragHandle?: false;
@@ -39,11 +39,15 @@ export const DndItem = <I extends object>(
     useCustomDragHandle = false,
   } = props;
 
+  // 计算是否可拖拽
+  const isDragEnabled =
+    typeof enableDrag === "function" ? enableDrag(item) : enableDrag;
+
   return (
     <Draggable
       draggableId={String(item.id)}
       index={index}
-      isDragDisabled={!enableDrag}
+      isDragDisabled={!isDragEnabled}
     >
       {(provided, snapshot) => {
         const isDragging = snapshot.isDragging;
@@ -71,9 +75,9 @@ export const DndItem = <I extends object>(
               "rdb:p-3 rdb:shadow-sm",
               // 光标样式 - 只在非自定义手柄模式下应用
               !useCustomDragHandle &&
-                enableDrag &&
+                isDragEnabled &&
                 "active:rdb:cursor-grabbing rdb:cursor-grab",
-              !useCustomDragHandle && !enableDrag && "rdb:cursor-default",
+              !useCustomDragHandle && !isDragEnabled && "rdb:cursor-default",
               // hover 效果（不使用 transition）
               !isDragging && "hover:rdb:shadow-md hover:rdb:border-slate-300",
               // 拖拽状态样式

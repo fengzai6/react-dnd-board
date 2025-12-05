@@ -9,7 +9,6 @@ import {
   isValidState,
   safeCallOnDragEnd,
   safeExecute,
-  StateRecovery,
 } from "./error-handler";
 
 describe("error-handler", () => {
@@ -82,29 +81,6 @@ describe("error-handler", () => {
       }
 
       consoleErrorSpy.mockRestore();
-    });
-  });
-
-  describe("StateRecovery", () => {
-    it("应该正确管理状态", () => {
-      const recovery = new StateRecovery({ count: 0 });
-
-      expect(recovery.getCurrentState()).toEqual({ count: 0 });
-
-      recovery.updateState({ count: 1 });
-      expect(recovery.getCurrentState()).toEqual({ count: 1 });
-      expect(recovery.getPreviousState()).toEqual({ count: 0 });
-    });
-
-    it("应该能够恢复到上一个状态", () => {
-      const recovery = new StateRecovery({ count: 0 });
-      recovery.updateState({ count: 1 });
-      recovery.updateState({ count: 2 });
-
-      const recovered = recovery.recoverToPreviousState();
-
-      expect(recovered).toEqual({ count: 1 });
-      expect(recovery.getCurrentState()).toEqual({ count: 1 });
     });
   });
 

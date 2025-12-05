@@ -21,9 +21,9 @@ export interface DndListProps<T extends object, I extends object> {
   list?: ListItem<T, I>; // 受控模式数据
   initialList?: ListItem<T, I>; // 非受控模式初始数据
   index?: number; // 在看板中的索引（仅看板模式需要）
-  className?: string;
+  className?: string | ((isDragging: boolean) => string);
   style?: React.CSSProperties;
-  enableDrag?: boolean;
+  enableDrag?: boolean | ((list: ListItem<T, I>) => boolean);
   itemProps?: ItemProps<I>;
   onListChange?: (list: ListItem<T, I>) => void;
   renderItem?: (item: DndItemType<I>) => React.ReactNode;
@@ -67,7 +67,6 @@ export const DndList = <T extends object, I extends object>({
       <ErrorDisplay
         componentName="DndList"
         error="Index is required when DndList is used in board mode"
-        className={className}
       />
     );
   }
@@ -75,11 +74,7 @@ export const DndList = <T extends object, I extends object>({
   // 5. 验证 list 数据
   if (!list) {
     return (
-      <ErrorDisplay
-        componentName="DndList"
-        error="List data is required"
-        className={className}
-      />
+      <ErrorDisplay componentName="DndList" error="List data is required" />
     );
   }
 
@@ -89,13 +84,16 @@ export const DndList = <T extends object, I extends object>({
       <ErrorDisplay
         componentName="DndList"
         error={validation.error || "Invalid list data"}
-        className={className}
       />
     );
   }
 
   // 6. 确保 items 始终为数组
   const items = list.items || [];
+
+  // 6.5. 计算是否可拖拽
+  const isDragEnabled =
+    typeof enableDrag === "function" ? enableDrag(list) : enableDrag;
 
   // 7. 默认标题渲染
   const defaultHeader = (
@@ -115,7 +113,7 @@ export const DndList = <T extends object, I extends object>({
 
   // 10. 渲染列表内容（不包含 Draggable 包装）
   const renderListContent = (
-    isDragging?: boolean,
+    isDragging: boolean = false,
     dragHandleProps?: DraggableProvidedDragHandleProps | null,
   ) => {
     return (
@@ -125,9 +123,10 @@ export const DndList = <T extends object, I extends object>({
           "rdb:flex rdb:min-w-[280px] rdb:flex-col",
           "rdb:rounded-lg rdb:border rdb:border-slate-200 rdb:bg-white",
           "rdb:p-4 rdb:shadow-md",
-          // 拖拽状态样式（不使用 transition）
+          // 拖拽状态样式
           isDragging && "rdb:opacity-80 rdb:shadow-2xl",
-          className,
+          // 自定义类名
+          typeof className === "function" ? className(isDragging) : className,
         )}
         style={style}
       >
@@ -136,9 +135,9 @@ export const DndList = <T extends object, I extends object>({
           {...dragHandleProps}
           className={cn(
             // 标题样式
-            enableDrag && "active:rdb:cursor-grabbing rdb:cursor-grab",
+            isDragEnabled && "active:rdb:cursor-grabbing rdb:cursor-grab",
             // 如果不可拖拽，使用默认光标
-            !enableDrag && "rdb:cursor-default",
+            !isDragEnabled && "rdb:cursor-default",
           )}
         >
           {headerContent}
@@ -211,7 +210,7 @@ export const DndList = <T extends object, I extends object>({
     <Draggable
       draggableId={String(list.id)}
       index={index}
-      isDragDisabled={!enableDrag}
+      isDragDisabled={!isDragEnabled}
     >
       {(provided, snapshot) => {
         return (

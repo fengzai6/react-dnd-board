@@ -1,20 +1,39 @@
 import { DndBoard } from "@/lib/components/dnd-board";
-import { ExampleSection } from "../components/ExampleSection";
-import { largeDataBoard } from "../data/mockData";
-import { getPriorityColor, getPriorityLabel } from "../data/utils";
+import { ExampleSection } from "../../components/example-section";
+import { largeDataBoard } from "../../data/mock-data";
+import { getPriorityColor, getPriorityLabel } from "../../data/utils";
+
+const CODE = `import { DndBoard } from "@/lib/components/dnd-board";
+
+export function LargeDataExample() {
+  return (
+    <DndBoard
+      initialLists={largeDataBoard}
+      renderListHeader={(list) => (
+        <div style={{ backgroundColor: list.color }}>
+          <span>{list.title}</span>
+          <span>{list.items?.length || 0} 项</span>
+        </div>
+      )}
+      renderItem={(item) => (
+        <div>
+          <span>{item.content}</span>
+          <span>{getPriorityLabel(item.priority)}</span>
+        </div>
+      )}
+    />
+  );
+}`;
 
 export function LargeDataExample() {
   return (
     <ExampleSection
-      title="9. 大数据量性能测试"
+      title="大数据量性能测试"
       description="测试组件在处理大量数据时的性能表现（50 个项目）"
+      codePath="examples/large-data-example"
+      code={CODE}
     >
       <div className="rdb:space-y-4">
-        <div className="rdb:rounded rdb:bg-indigo-50 rdb:p-4 rdb:text-sm rdb:text-indigo-800">
-          <strong>特点：</strong>使用 React Compiler
-          自动优化，支持大量数据的流畅拖拽
-        </div>
-
         <DndBoard
           initialLists={largeDataBoard}
           renderListHeader={(list) => (

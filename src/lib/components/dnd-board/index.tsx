@@ -1,4 +1,4 @@
-import type { DndBoardProps, ListItems } from "@/lib/types";
+import type { DndBoardProps, DndItem, ListItem, ListItems } from "@/lib/types";
 import { detectControlModeSwitch } from "@/lib/utils/error-handler";
 import { safeValidateLists } from "@/lib/utils/validation";
 import { cn } from "@/shared/utils/cn";
@@ -107,8 +107,6 @@ export const DndBoard = <T extends object, I extends object>({
         className={cn(
           // 默认样式 - 支持水平滚动
           "rdb:flex rdb:space-x-4 rdb:overflow-x-auto rdb:p-4",
-          // 背景和边框 - 使用渐变背景
-          "rdb:rounded-lg rdb:bg-linear-to-br rdb:from-slate-50 rdb:to-slate-100",
           // 滚动条样式
           "rdb:scrollbar-thin rdb:scrollbar-thumb-slate-400 rdb:scrollbar-track-slate-200",
           // 最小高度
@@ -125,21 +123,41 @@ export const DndBoard = <T extends object, I extends object>({
               {...provided.droppableProps}
               className={cn("rdb:flex rdb:space-x-4", boardClassName)}
             >
-              {lists.map((list, index) => (
-                <DndList
-                  key={list.id}
-                  list={list}
-                  index={index}
-                  className={listClassName}
-                  itemProps={{
-                    enableDrag: enableItemDrag,
-                    className: itemClassName,
-                  }}
-                  renderItem={renderItem}
-                  renderHeader={renderListHeader}
-                  enableDrag={enableListDrag}
-                />
-              ))}
+              {lists.map((list, index) => {
+                // 计算列表是否可拖拽
+                const isListDragEnabled =
+                  typeof enableListDrag === "function"
+                    ? enableListDrag(list)
+                    : enableListDrag;
+
+                // 计算项目是否可拖拽的函数
+                const getItemDragEnabled =
+                  typeof enableItemDrag === "function"
+                    ? (item: DndItem<I>) =>
+                        (
+                          enableItemDrag as (
+                            item: DndItem<I>,
+                            list: ListItem<T, I>,
+                          ) => boolean
+                        )(item, list)
+                    : enableItemDrag;
+
+                return (
+                  <DndList
+                    key={list.id}
+                    list={list}
+                    index={index}
+                    className={listClassName}
+                    itemProps={{
+                      enableDrag: getItemDragEnabled,
+                      className: itemClassName,
+                    }}
+                    renderItem={renderItem}
+                    renderHeader={renderListHeader}
+                    enableDrag={isListDragEnabled}
+                  />
+                );
+              })}
               {provided.placeholder}
             </div>
           )}

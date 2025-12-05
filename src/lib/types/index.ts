@@ -39,6 +39,8 @@ export interface DndBoardProps<T extends object, I extends object> {
   renderItem?: (item: DndItem<I>) => React.ReactNode;
   renderListHeader?: (list: ListItem<T, I>) => React.ReactNode;
 
-  enableListDrag?: boolean;
-  enableItemDrag?: boolean;
+  enableListDrag?: boolean | ((list: ListItem<T, I>) => boolean);
+  enableItemDrag?:
+    | boolean
+    | ((item: DndItem<I>, list: ListItem<T, I>) => boolean);
 }

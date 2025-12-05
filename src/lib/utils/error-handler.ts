@@ -6,7 +6,7 @@ import type { DragResult } from "../types";
  */
 export function safeCallOnDragEnd(
   callback: (result: DragResult) => void,
-  result: DragResult
+  result: DragResult,
 ): void {
   try {
     callback(result);
@@ -31,51 +31,6 @@ export function devWarning(message: string): void {
 export function devError(message: string): void {
   if (import.meta.env.MODE !== "production") {
     console.error(`[DndBoard Error]: ${message}`);
-  }
-}
-
-/**
- * 状态恢复工具类
- * 用于在状态更新失败时恢复到上一个有效状态
- */
-export class StateRecovery<T> {
-  private previousState: T;
-  private currentState: T;
-
-  constructor(initialState: T) {
-    this.previousState = initialState;
-    this.currentState = initialState;
-  }
-
-  /**
-   * 更新状态
-   */
-  updateState(newState: T): void {
-    this.previousState = this.currentState;
-    this.currentState = newState;
-  }
-
-  /**
-   * 获取当前状态
-   */
-  getCurrentState(): T {
-    return this.currentState;
-  }
-
-  /**
-   * 恢复到上一个状态
-   */
-  recoverToPreviousState(): T {
-    devWarning("Recovering to previous state due to invalid state update");
-    this.currentState = this.previousState;
-    return this.previousState;
-  }
-
-  /**
-   * 获取上一个状态
-   */
-  getPreviousState(): T {
-    return this.previousState;
   }
 }
 
@@ -112,7 +67,7 @@ export function isValidState<T>(state: T): boolean {
 export function safeExecute<T>(
   fn: () => T,
   defaultValue: T,
-  errorMessage?: string
+  errorMessage?: string,
 ): T {
   try {
     return fn();
@@ -175,7 +130,7 @@ export function isValidDragResult(result: DragResult): boolean {
 export function detectControlModeSwitch(
   componentName: string,
   wasControlled: boolean,
-  isControlled: boolean
+  isControlled: boolean,
 ): void {
   if (wasControlled !== isControlled) {
     const mode = isControlled
@@ -184,7 +139,7 @@ export function detectControlModeSwitch(
     devWarning(
       `${componentName} is switching from ${mode} mode. ` +
         `This may cause unexpected behavior. ` +
-        `Decide between controlled (provide value prop) or uncontrolled (use defaultValue) and don't change between them.`
+        `Decide between controlled (provide value prop) or uncontrolled (use defaultValue) and don't change between them.`,
     );
   }
 }

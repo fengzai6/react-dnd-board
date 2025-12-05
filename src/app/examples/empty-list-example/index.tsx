@@ -1,18 +1,34 @@
 import { DndBoard } from "@/lib/components/dnd-board";
-import { ExampleSection } from "../components/ExampleSection";
-import { emptyBoardData } from "../data/mockData";
+import { ExampleSection } from "../../components/example-section";
+import { emptyBoardData } from "../../data/mock-data";
+
+const CODE = `import { DndBoard } from "@/lib/components/dnd-board";
+
+export function EmptyListExample() {
+  return (
+    <DndBoard
+      initialLists={emptyBoardData}
+      renderListHeader={(list) => (
+        <div style={{ backgroundColor: list.color }}>
+          {list.title}
+        </div>
+      )}
+      renderItem={(item) => (
+        <div>{item.content}</div>
+      )}
+    />
+  );
+}`;
 
 export function EmptyListExample() {
   return (
     <ExampleSection
-      title="7. 空列表处理"
+      title="空列表处理"
       description="展示组件如何优雅地处理空列表的情况"
+      codePath="examples/empty-list-example"
+      code={CODE}
     >
       <div className="rdb:space-y-4">
-        <div className="rdb:rounded rdb:bg-slate-50 rdb:p-4 rdb:text-sm rdb:text-slate-800">
-          <strong>特点：</strong>空列表仍然可以作为拖拽目标，接收其他列表的项目
-        </div>
-
         <DndBoard
           initialLists={emptyBoardData}
           renderListHeader={(list) => (

@@ -1,23 +1,42 @@
 import { DndList } from "@/lib/components/dnd-list";
 import { useState } from "react";
-import { ExampleSection } from "../components/ExampleSection";
-import { invalidListData } from "../data/mockData";
+import { ExampleSection } from "../../components/example-section";
+import { invalidListData } from "../../data/mock-data";
+
+const CODE = `import { DndList } from "@/lib/components/dnd-list";
+import { useState } from "react";
+
+export function InvalidDataExample() {
+  const [list, setList] = useState(invalidListData);
+
+  return (
+    <DndList
+      list={list}
+      onListChange={setList}
+      renderHeader={(list) => (
+        <div>
+          <h3>{list.name}</h3>
+        </div>
+      )}
+      renderItem={(item) => (
+        <div>{item.text}</div>
+      )}
+    />
+  );
+}`;
 
 export function InvalidDataExample() {
   const [list, setList] = useState(invalidListData);
 
   return (
     <ExampleSection
-      title="8. 错误处理 - 无效数据"
+      title="错误处理 - 无效数据"
       description="组件会自动验证和过滤无效数据（如空 ID），并显示错误信息"
       variant="error"
+      codePath="examples/invalid-data-example"
+      code={CODE}
     >
       <div className="rdb:space-y-4">
-        <div className="rdb:rounded rdb:bg-red-100 rdb:p-4 rdb:text-sm rdb:text-red-800">
-          <strong>特点：</strong>
-          内置数据验证，自动过滤无效项目，保证组件稳定运行
-        </div>
-
         <div className="rdb:mx-auto rdb:max-w-2xl">
           <DndList
             list={list}

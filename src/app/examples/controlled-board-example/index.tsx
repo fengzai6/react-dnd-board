@@ -1,9 +1,41 @@
 import { DndBoard } from "@/lib/components/dnd-board";
 import type { DragResult } from "@/lib/types";
 import { useState } from "react";
-import { ExampleSection } from "../components/ExampleSection";
-import { basicBoardData } from "../data/mockData";
-import { getPriorityColor, getPriorityLabel } from "../data/utils";
+import { ExampleSection } from "../../components/example-section";
+import { basicBoardData } from "../../data/mock-data";
+import { getPriorityColor, getPriorityLabel } from "../../data/utils";
+
+const CODE = `import { DndBoard } from "@/lib/components/dnd-board";
+import type { DragResult } from "@/lib/types";
+import { useState } from "react";
+
+export function ControlledBoardExample() {
+  const [lists, setLists] = useState(basicBoardData);
+
+  const handleDragEnd = (result: DragResult) => {
+    console.log("拖拽结果:", result);
+  };
+
+  return (
+    <DndBoard
+      lists={lists}
+      onListsChange={setLists}
+      onDragEnd={handleDragEnd}
+      renderListHeader={(list) => (
+        <div className="..." style={{ backgroundColor: list.color }}>
+          <span>{list.title}</span>
+          <span>{list.items?.length || 0}</span>
+        </div>
+      )}
+      renderItem={(item) => (
+        <div>
+          <p>{item.content}</p>
+          <span>{getPriorityLabel(item.priority)}</span>
+        </div>
+      )}
+    />
+  );
+}`;
 
 export function ControlledBoardExample() {
   const [lists, setLists] = useState(basicBoardData);
@@ -14,14 +46,12 @@ export function ControlledBoardExample() {
 
   return (
     <ExampleSection
-      title="1. 受控模式 - DndBoard"
+      title="受控模式 - DndBoard"
       description="父组件完全控制状态，通过 lists 和 onDragEnd/onListsChange 管理数据"
+      codePath="examples/controlled-board-example"
+      code={CODE}
     >
       <div className="rdb:space-y-4">
-        <div className="rdb:rounded rdb:bg-blue-50 rdb:p-4 rdb:text-sm rdb:text-blue-800">
-          <strong>特点：</strong>父组件管理状态，可以在拖拽后执行自定义逻辑
-        </div>
-
         <DndBoard
           lists={lists}
           onListsChange={setLists}

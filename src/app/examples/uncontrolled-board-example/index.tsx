@@ -1,18 +1,34 @@
 import { DndBoard } from "@/lib/components/dnd-board";
-import { ExampleSection } from "../components/ExampleSection";
-import { basicBoardData } from "../data/mockData";
+import { ExampleSection } from "../../components/example-section";
+import { basicBoardData } from "../../data/mock-data";
+
+const CODE = `import { DndBoard } from "@/lib/components/dnd-board";
+
+export function UncontrolledBoardExample() {
+  return (
+    <DndBoard
+      initialLists={basicBoardData}
+      renderListHeader={(list) => (
+        <div style={{ backgroundColor: list.color }}>
+          {list.title}
+        </div>
+      )}
+      renderItem={(item) => (
+        <div>{item.content}</div>
+      )}
+    />
+  );
+}`;
 
 export function UncontrolledBoardExample() {
   return (
     <ExampleSection
-      title="2. 非受控模式 - DndBoard"
+      title="非受控模式 - DndBoard"
       description="组件内部管理状态，通过 initialLists 提供初始数据"
+      codePath="examples/uncontrolled-board-example"
+      code={CODE}
     >
       <div className="rdb:space-y-4">
-        <div className="rdb:rounded rdb:bg-green-50 rdb:p-4 rdb:text-sm rdb:text-green-800">
-          <strong>特点：</strong>组件自己管理状态，适合简单场景，无需父组件干预
-        </div>
-
         <DndBoard
           initialLists={basicBoardData}
           renderListHeader={(list) => (

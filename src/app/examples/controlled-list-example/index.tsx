@@ -1,21 +1,54 @@
 import { DndList } from "@/lib/components/dnd-list";
 import { useState } from "react";
-import { ExampleSection } from "../components/ExampleSection";
-import { basicListData } from "../data/mockData";
+import { ExampleSection } from "../../components/example-section";
+import { basicListData } from "../../data/mock-data";
+
+const CODE = `import { DndList } from "@/lib/components/dnd-list";
+import { useState } from "react";
+
+export function ControlledListExample() {
+  const [list, setList] = useState(basicListData);
+
+  return (
+    <DndList
+      list={list}
+      onListChange={setList}
+      renderHeader={(list) => (
+        <div>
+          <h3>{list.name}</h3>
+          <p>{list.description}</p>
+        </div>
+      )}
+      renderItem={(item) => (
+        <div>
+          <input
+            type="checkbox"
+            checked={item.completed}
+            onChange={() => {
+              const newItems = list.items?.map((i) =>
+                i.id === item.id ? { ...i, completed: !i.completed } : i
+              );
+              setList({ ...list, items: newItems });
+            }}
+          />
+          <span>{item.text}</span>
+        </div>
+      )}
+    />
+  );
+}`;
 
 export function ControlledListExample() {
   const [list, setList] = useState(basicListData);
 
   return (
     <ExampleSection
-      title="3. 受控模式 - DndList"
+      title="受控模式 - DndList"
       description="单个列表的受控模式，父组件管理列表状态"
+      codePath="examples/controlled-list-example"
+      code={CODE}
     >
       <div className="rdb:space-y-4">
-        <div className="rdb:rounded rdb:bg-purple-50 rdb:p-4 rdb:text-sm rdb:text-purple-800">
-          <strong>特点：</strong>适合需要监听列表变化或执行额外逻辑的场景
-        </div>
-
         <div className="rdb:mx-auto rdb:max-w-2xl">
           <DndList
             list={list}
@@ -37,7 +70,7 @@ export function ControlledListExample() {
                   checked={item.completed}
                   onChange={() => {
                     const newItems = list.items?.map((i) =>
-                      i.id === item.id ? { ...i, completed: !i.completed } : i
+                      i.id === item.id ? { ...i, completed: !i.completed } : i,
                     );
                     setList({ ...list, items: newItems });
                   }}

@@ -1,19 +1,43 @@
 import { DndBoard } from "@/lib/components/dnd-board";
-import { ExampleSection } from "../components/ExampleSection";
-import { basicBoardData } from "../data/mockData";
+import { ExampleSection } from "../../components/example-section";
+import { basicBoardData } from "../../data/mock-data";
+
+const CODE = `import { DndBoard } from "@/lib/components/dnd-board";
+
+// 禁用项目拖拽
+<DndBoard
+  initialLists={basicBoardData}
+  enableItemDrag={false}
+  renderListHeader={(list) => <div>{list.title}</div>}
+  renderItem={(item) => <div>{item.content}</div>}
+/>
+
+// 禁用列表拖拽
+<DndBoard
+  initialLists={basicBoardData}
+  enableListDrag={false}
+  renderListHeader={(list) => <div>{list.title}</div>}
+  renderItem={(item) => <div>{item.content}</div>}
+/>
+
+// 完全禁用拖拽
+<DndBoard
+  initialLists={basicBoardData}
+  enableListDrag={false}
+  enableItemDrag={false}
+  renderListHeader={(list) => <div>{list.title} (只读)</div>}
+  renderItem={(item) => <div>{item.content}</div>}
+/>`;
 
 export function DisabledDragExample() {
   return (
     <ExampleSection
-      title="6. 禁用拖拽"
+      title="禁用拖拽"
       description="通过 enableListDrag 和 enableItemDrag 控制拖拽功能的开关"
+      codePath="examples/disabled-drag-example"
+      code={CODE}
     >
       <div className="rdb:space-y-4">
-        <div className="rdb:rounded rdb:bg-gray-50 rdb:p-4 rdb:text-sm rdb:text-gray-800">
-          <strong>特点：</strong>
-          可以分别禁用列表拖拽和项目拖拽，适合只读展示场景
-        </div>
-
         <div className="rdb:grid rdb:gap-6 rdb:md:grid-cols-2">
           {/* 禁用项目拖拽 */}
           <div className="rdb:space-y-2">

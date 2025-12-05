@@ -1,19 +1,35 @@
 import { DndBoard } from "@/lib/components/dnd-board";
-import { ExampleSection } from "../components/ExampleSection";
-import { multiListBoardData } from "../data/mockData";
+import { ExampleSection } from "../../components/example-section";
+import { multiListBoardData } from "../../data/mock-data";
+
+const CODE = `import { DndBoard } from "@/lib/components/dnd-board";
+
+export function MultiListExample() {
+  return (
+    <DndBoard
+      initialLists={multiListBoardData}
+      renderListHeader={(list) => (
+        <div style={{ backgroundColor: list.color }}>
+          <span>{list.title}</span>
+          <span>{list.items?.length || 0}</span>
+        </div>
+      )}
+      renderItem={(item) => (
+        <div>{item.content}</div>
+      )}
+    />
+  );
+}`;
 
 export function MultiListExample() {
   return (
     <ExampleSection
-      title="10. 多列表拖拽"
+      title="多列表拖拽"
       description="展示多个列表之间的拖拽交互，包括列表重排序和跨列表移动项目"
+      codePath="examples/multi-list-example"
+      code={CODE}
     >
       <div className="rdb:space-y-4">
-        <div className="rdb:rounded rdb:bg-teal-50 rdb:p-4 rdb:text-sm rdb:text-teal-800">
-          <strong>特点：</strong>
-          支持列表之间的拖拽重排序，项目可以在任意列表间移动
-        </div>
-
         <DndBoard
           initialLists={multiListBoardData}
           renderListHeader={(list) => (
