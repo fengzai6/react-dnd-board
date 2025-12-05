@@ -1,0 +1,5 @@
+@import "tailwindcss" prefix(rdb);
+
+.rdb * {
+  box-sizing: border-box;
+}
