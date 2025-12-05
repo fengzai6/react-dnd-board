@@ -1,7 +1,7 @@
 {
   "name": "react-dnd-board",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "基于 @hello-pangea/dnd 的 React 拖拽组件库，提供开箱即用的面板和列表组件",
   "keywords": [
     "react",
