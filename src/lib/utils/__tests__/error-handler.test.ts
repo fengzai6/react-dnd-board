@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { DragResult } from "../types";
+import type { DragResult } from "../../types";
 import {
   detectControlModeSwitch,
   devError,
@@ -9,7 +9,7 @@ import {
   isValidState,
   safeCallOnDragEnd,
   safeExecute,
-} from "./error-handler";
+} from "../error-handler";
 
 describe("error-handler", () => {
   describe("safeCallOnDragEnd", () => {

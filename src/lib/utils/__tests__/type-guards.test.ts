@@ -1,16 +1,19 @@
 import { describe, expect, it } from "vitest";
-import type { ListItems } from "../types";
+import type { BaseDndData } from "../../types";
 import {
   isBoardMode,
   isListMode,
   type BoardModeProps,
   type ListModeProps,
-} from "./type-guards";
+} from "../type-guards";
+
+type TestItem = BaseDndData;
+type TestList = BaseDndData & { items?: TestItem[] };
 
 describe("type-guards", () => {
   describe("isListMode", () => {
     it("应该正确识别列表模式", () => {
-      const props: ListModeProps<object> = {
+      const props: ListModeProps<TestItem> = {
         type: "list",
         data: [{ id: "1" }, { id: "2" }],
         onDataChange: () => {},
@@ -20,7 +23,7 @@ describe("type-guards", () => {
     });
 
     it("应该拒绝看板模式", () => {
-      const props: BoardModeProps<object, object> = {
+      const props: BoardModeProps<TestList, TestItem> = {
         type: "board",
         data: [{ id: "1", items: [] }],
         onDataChange: () => {},
@@ -32,12 +35,12 @@ describe("type-guards", () => {
 
   describe("isBoardMode", () => {
     it("应该正确识别看板模式", () => {
-      const props: BoardModeProps<object, object> = {
+      const props: BoardModeProps<TestList, TestItem> = {
         type: "board",
         data: [
           { id: "list-1", items: [{ id: "item-1" }] },
           { id: "list-2", items: [] },
-        ] as ListItems<object, object>,
+        ],
         onDataChange: () => {},
       };
 
@@ -45,7 +48,7 @@ describe("type-guards", () => {
     });
 
     it("应该拒绝列表模式", () => {
-      const props: ListModeProps<object> = {
+      const props: ListModeProps<TestItem> = {
         type: "list",
         data: [{ id: "1" }, { id: "2" }],
         onDataChange: () => {},
@@ -57,29 +60,33 @@ describe("type-guards", () => {
 
   describe("类型守卫的类型推断", () => {
     it("应该正确推断列表模式的类型", () => {
-      const props: ListModeProps<object> | BoardModeProps<object, object> = {
+      const props:
+        | ListModeProps<TestItem>
+        | BoardModeProps<TestList, TestItem> = {
         type: "list",
         data: [{ id: "1" }],
         onDataChange: () => {},
       };
 
       if (isListMode(props)) {
-        // TypeScript 应该推断 props.data 为 object[]
-        const data: object[] = props.data;
+        // TypeScript 应该推断 props.data 为 TestItem[]
+        const data: TestItem[] = props.data;
         expect(Array.isArray(data)).toBe(true);
       }
     });
 
     it("应该正确推断看板模式的类型", () => {
-      const props: ListModeProps<object> | BoardModeProps<object, object> = {
+      const props:
+        | ListModeProps<TestItem>
+        | BoardModeProps<TestList, TestItem> = {
         type: "board",
-        data: [{ id: "1", items: [] }] as ListItems<object, object>,
+        data: [{ id: "1", items: [] }],
         onDataChange: () => {},
       };
 
       if (isBoardMode(props)) {
-        // TypeScript 应该推断 props.data 为 ListItems<object, object>
-        const data: ListItems<object, object> = props.data;
+        // TypeScript 应该推断 props.data 为带有 items 的列表数组
+        const data = props.data;
         expect(Array.isArray(data)).toBe(true);
       }
     });
