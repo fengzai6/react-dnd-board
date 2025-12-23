@@ -1,4 +1,4 @@
-import type { Priority, TaskStatus } from "./types";
+import type { Priority } from "./types";
 
 export const getPriorityLabel = (priority: Priority): string => {
   const labels: Record<Priority, string> = {
@@ -16,22 +16,4 @@ export const getPriorityColor = (priority: Priority): string => {
     low: "rdb:bg-green-100 rdb:text-green-700",
   };
   return colors[priority];
-};
-
-export const getStatusColor = (status: TaskStatus): string => {
-  const colors: Record<TaskStatus, string> = {
-    todo: "#3b82f6",
-    "in-progress": "#f59e0b",
-    done: "#10b981",
-  };
-  return colors[status];
-};
-
-export const getStatusLabel = (status: TaskStatus): string => {
-  const labels: Record<TaskStatus, string> = {
-    todo: "待办事项",
-    "in-progress": "进行中",
-    done: "已完成",
-  };
-  return labels[status];
 };
