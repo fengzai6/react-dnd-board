@@ -1,25 +1,24 @@
 import {
-    DragDropContext,
-    type DragDropContextProps,
-    type DropResult,
-    type OnDragStartResponder,
+  DragDropContext,
+  type DragDropContextProps,
+  type DropResult,
+  type OnDragStartResponder,
 } from "@hello-pangea/dnd";
-import type { ReactNode } from "react";
 import type { BaseDndData, DragResult } from "../../types";
 import {
-    arrayMove,
-    handleItemDragBetweenLists,
-    handleItemDragWithinList,
+  arrayMove,
+  handleItemDragBetweenLists,
+  handleItemDragWithinList,
 } from "../../utils/drag-handler";
 import {
-    devError,
-    isValidDragResult,
-    safeCallOnDragEnd,
+  devError,
+  isValidDragResult,
+  safeCallOnDragEnd,
 } from "../../utils/error-handler";
 import {
-    isBoardMode,
-    isListMode,
-    type DndContextModeProps,
+  isBoardMode,
+  isListMode,
+  type DndContextModeProps,
 } from "../../utils/type-guards";
 
 // 组合 Props
@@ -27,7 +26,7 @@ type DndContextProps<
   T extends BaseDndData,
   S extends BaseDndData = BaseDndData,
 > = {
-  children: ReactNode;
+  children: React.ReactNode;
   // 允许用户覆盖或扩展默认的 onDragEnd 行为
   onDragEnd?: (result: DragResult) => void;
   // 透传给 DragDropContext 的其他 props

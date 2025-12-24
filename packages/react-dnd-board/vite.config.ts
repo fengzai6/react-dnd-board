@@ -2,19 +2,17 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import dts from "unplugin-dts/vite";
+import cssInjected from "vite-plugin-css-injected-by-js";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [
-    react({
-      babel: {
-        plugins: [["babel-plugin-react-compiler"]],
-      },
-    }),
+    react(),
     tailwindcss(),
+    cssInjected(),
     dts({
       pathsToAliases: true,
-      tsconfigPath: "./tsconfig.json",
+      tsconfigPath: "./tsconfig.app.json",
       insertTypesEntry: true,
       include: ["src/**"],
       exclude: [
@@ -35,12 +33,19 @@ export default defineConfig({
       formats: ["es", "umd"],
     },
     rollupOptions: {
-      external: ["react", "react-dom", "@hello-pangea/dnd"],
+      external: [
+        "react",
+        "react-dom",
+        "react/jsx-runtime",
+        "react/jsx-dev-runtime",
+        "@hello-pangea/dnd",
+      ],
       output: {
-        assetFileNames: "style.css",
         globals: {
           react: "React",
           "react-dom": "ReactDOM",
+          "react/jsx-runtime": "ReactJSXRuntime",
+          "react/jsx-dev-runtime": "ReactJSXDevRuntime",
           "@hello-pangea/dnd": "HelloPangeaDnd",
         },
       },
