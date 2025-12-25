@@ -1,7 +1,7 @@
 {
   "name": "react-dnd-board",
   "private": false,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "基于 @hello-pangea/dnd 的 React 拖拽组件库，提供开箱即用的面板和列表组件",
   "keywords": [
     "react",
@@ -16,19 +16,21 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/sj-distributor/react-dnd-board"
   },
-  "homepage": "",
-  "bugs": {},
+  "homepage": "https://github.com/sj-distributor/react-dnd-board#readme",
+  "bugs": {
+    "url": "https://github.com/sj-distributor/react-dnd-board/issues"
+  },
   "type": "module",
   "files": [
-    "dist/*.js",
-    "dist/*.css",
-    "dist/*.d.ts",
-    "README.md"
+    "dist",
+    "!dist/app",
+    "README.md",
+    "LICENCE"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -41,8 +43,8 @@
   "scripts": {
     "dev": "vite",
     "build": "yarn build:lib && yarn build:app",
-    "build:lib": "BUILD_MODE=lib vite build",
-    "build:app": "vite build",
+    "build:lib": "tsc --build && BUILD_MODE=lib vite build",
+    "build:app": "tsc --build && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",

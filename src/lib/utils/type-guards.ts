@@ -1,4 +1,4 @@
-import type { ListItems } from "@/lib/types";
+import type { BaseDndData, BoardList } from "@/lib/types";
 
 /**
  * DndContext 的列表模式 Props
@@ -6,33 +6,35 @@ import type { ListItems } from "@/lib/types";
 export type ListModeProps<T> = {
   type: "list";
   data: T[];
-  onDataChange: (data: T[]) => void;
+  onDataChange?: (data: T[]) => void;
 };
 
 /**
  * DndContext 的看板模式 Props
  */
-export type BoardModeProps<T extends object, I extends object> = {
+export type BoardModeProps<T extends BaseDndData, S extends BaseDndData> = {
   type: "board";
-  data: ListItems<T, I>;
-  onDataChange: (data: ListItems<T, I>) => void;
+  data: BoardList<T, S>[];
+  onDataChange?: (data: BoardList<T, S>[]) => void;
 };
 
 /**
  * DndContext 的组合 Props 类型
  */
-export type DndContextModeProps<T extends object, I extends object = object> =
-  | ListModeProps<T>
-  | BoardModeProps<T, I>;
+export type DndContextModeProps<
+  T extends BaseDndData,
+  S extends BaseDndData = BaseDndData,
+> = ListModeProps<T> | BoardModeProps<T, S>;
 
 /**
  * 判断 DndContext 是否为列表模式
  * @param props - DndContext 的 props
  * @returns 如果是列表模式返回 true
  */
-export function isListMode<T extends object, I extends object = object>(
-  props: DndContextModeProps<T, I>
-): props is ListModeProps<T> {
+export function isListMode<
+  T extends BaseDndData,
+  S extends BaseDndData = BaseDndData,
+>(props: DndContextModeProps<T, S>): props is ListModeProps<T> {
   return props.type === "list";
 }
 
@@ -41,8 +43,9 @@ export function isListMode<T extends object, I extends object = object>(
  * @param props - DndContext 的 props
  * @returns 如果是看板模式返回 true
  */
-export function isBoardMode<T extends object, I extends object = object>(
-  props: DndContextModeProps<T, I>
-): props is BoardModeProps<T, I> {
+export function isBoardMode<
+  T extends BaseDndData,
+  S extends BaseDndData = BaseDndData,
+>(props: DndContextModeProps<T, S>): props is BoardModeProps<T, S> {
   return props.type === "board";
 }

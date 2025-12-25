@@ -4,20 +4,23 @@ import "../index.css";
 // ============================================
 // 核心类型导出
 // ============================================
+export type { BoardListProps, DndBoardProps } from "./components/dnd-board";
+export type { DndItemProps } from "./components/dnd-item";
+export type { DndListProps } from "./components/dnd-list";
 export type {
-  DndBoardProps,
-  DndItem as DndItemType,
+  BaseDndData,
+  BoardList,
+  DndClassName,
   DragResult,
-  ListItem,
-  ListItems,
+  DroppableClassName,
 } from "./types";
 
 // ============================================
 // 组件导出
 // ============================================
 export { DndBoard } from "./components/dnd-board";
-export { DndItem, type DndItemProps } from "./components/dnd-item";
-export { DndList, type DndListProps } from "./components/dnd-list";
+export { DndItem } from "./components/dnd-item";
+export { DndList } from "./components/dnd-list";
 
 // ============================================
 // 工具函数导出

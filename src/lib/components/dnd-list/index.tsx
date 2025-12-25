@@ -1,224 +1,206 @@
-import type { DndItem as DndItemType, ListItem } from "@/lib/types";
-import { detectControlModeSwitch } from "@/lib/utils/error-handler";
-import { safeValidateListItem } from "@/lib/utils/validation";
+import type { BaseDndData, DroppableClassName } from "@/lib/types";
+import { validateData, validateItems } from "@/lib/utils/validation";
 import { cn } from "@/shared/utils/cn";
 import {
   Draggable,
   Droppable,
+  type DraggableProvided,
   type DraggableProvidedDragHandleProps,
+  type DraggableStateSnapshot,
 } from "@hello-pangea/dnd";
-import { useEffect, useRef, useState } from "react";
-import { DndContext } from "../dnd-context";
+import { DndContext, type PickedDndContextProps } from "../dnd-context";
 import { DndItem, type DndItemProps } from "../dnd-item";
 import { ErrorDisplay } from "../error-display";
 
-type ItemProps<I extends object> = Partial<
-  Omit<DndItemProps<I>, "item" | "index" | "children">
->;
-
-// DndList 组件 Props
-export interface DndListProps<T extends object, I extends object> {
-  list?: ListItem<T, I>; // 受控模式数据
-  initialList?: ListItem<T, I>; // 非受控模式初始数据
-  index?: number; // 在看板中的索引（仅看板模式需要）
-  className?: string | ((isDragging: boolean) => string);
-  style?: React.CSSProperties;
-  enableDrag?: boolean | ((list: ListItem<T, I>) => boolean);
-  itemProps?: ItemProps<I>;
-  onListChange?: (list: ListItem<T, I>) => void;
-  renderItem?: (item: DndItemType<I>) => React.ReactNode;
-  renderHeader?: (list: ListItem<T, I>) => React.ReactNode;
+interface DndListClassNames {
+  header?: DroppableClassName;
+  /**
+   * 不建议设置 backdrop-blur，否则会偏移
+   */
+  content?: DroppableClassName;
 }
 
-export const DndList = <T extends object, I extends object>({
-  list: externalList,
-  initialList,
+type ItemProps<T extends BaseDndData> = Omit<
+  DndItemProps<T>,
+  "index" | "data" | "children"
+>;
+
+export type DndListProps<T extends BaseDndData, S extends BaseDndData> = {
+  data: T;
+  items?: S[];
+  index?: number;
+  className?: DroppableClassName;
+  classNames?: DndListClassNames;
+  style?: React.CSSProperties;
+  isDragDisabled?: boolean | ((data: T) => boolean);
+  isDropDisabled?: boolean | ((data: T) => boolean);
+  /** 横向布局 */
+  horizontal?: boolean;
+  itemProps?: ItemProps<S> | ((item: S, index: number) => ItemProps<S>);
+  renderHeader?:
+    | ((
+        dragHandleProps?: DraggableProvidedDragHandleProps | null,
+      ) => React.ReactNode)
+    | boolean;
+  renderItem?: (item: S, index: number, isDragging: boolean) => React.ReactNode;
+  onItemsChange?: (items: S[]) => void;
+} & PickedDndContextProps;
+
+export const DndList = <T extends BaseDndData, S extends BaseDndData>({
+  data,
+  items = [],
   index,
   className,
+  classNames = {},
   style,
-  enableDrag = true,
+  isDragDisabled: isDragDisabledProp,
+  isDropDisabled: isDropDisabledProp,
   itemProps,
-  onListChange,
-  renderItem,
+  horizontal,
   renderHeader,
-}: DndListProps<T, I>) => {
-  // 1. State Management
-  const isControlled = externalList !== undefined;
-  const wasControlledRef = useRef<boolean>(isControlled);
+  renderItem,
+  onItemsChange,
+}: DndListProps<T, S>) => {
+  const isDragDisabled =
+    typeof isDragDisabledProp === "function"
+      ? isDragDisabledProp(data)
+      : isDragDisabledProp;
 
-  const [internalList, setInternalList] = useState<ListItem<T, I> | undefined>(
-    initialList,
-  );
+  const isDropDisabled =
+    typeof isDropDisabledProp === "function"
+      ? isDropDisabledProp(data)
+      : isDropDisabledProp;
 
-  const list = isControlled ? externalList : internalList;
+  // 是否为看板的列表
+  const isBoardList = typeof index === "number";
 
-  // 2. 受控/非受控模式切换警告
-  useEffect(() => {
-    detectControlModeSwitch("DndList", wasControlledRef.current, isControlled);
-    wasControlledRef.current = isControlled;
-  }, [isControlled]);
-
-  // 3. 判断是否为看板模式
-  const isBoardList = index !== undefined;
-
-  // 4. 看板模式下验证 index 的存在性
-  if (isBoardList && typeof index !== "number") {
-    return (
-      <ErrorDisplay
-        componentName="DndList"
-        error="Index is required when DndList is used in board mode"
-      />
-    );
+  // 验证 data
+  const dataError = validateData(data);
+  if (dataError) {
+    return <ErrorDisplay error={dataError} />;
   }
 
-  // 5. 验证 list 数据
-  if (!list) {
-    return (
-      <ErrorDisplay componentName="DndList" error="List data is required" />
-    );
+  // 验证 items
+  const itemsError = validateItems(items, `List "${data.id}"`);
+  if (itemsError) {
+    return <ErrorDisplay error={itemsError} />;
   }
 
-  const validation = safeValidateListItem<T, I>(list);
-  if (!validation.isValid) {
-    return (
-      <ErrorDisplay
-        componentName="DndList"
-        error={validation.error || "Invalid list data"}
-      />
-    );
-  }
+  const renderDefaultItem = (item: S) => {
+    return <div className="rdb:text-slate-700">{item.label || item.id}</div>;
+  };
 
-  // 6. 确保 items 始终为数组
-  const items = list.items || [];
-
-  // 6.5. 计算是否可拖拽
-  const isDragEnabled =
-    typeof enableDrag === "function" ? enableDrag(list) : enableDrag;
-
-  // 7. 默认标题渲染
-  const defaultHeader = (
-    <div className="rdb:mb-3 rdb:border-b rdb:border-slate-200 rdb:pb-2 rdb:text-base rdb:font-semibold rdb:text-slate-800">
-      {list.id}
-    </div>
-  );
-
-  // 8. 默认项目渲染
-  const defaultRenderItem = (item: DndItemType<I>) => (
-    <div className="rdb:text-sm rdb:text-slate-700">{String(item.id)}</div>
-  );
-
-  // 9. 使用自定义渲染或默认渲染
-  const headerContent = renderHeader ? renderHeader(list) : defaultHeader;
-  const itemRenderer = renderItem || defaultRenderItem;
-
-  // 10. 渲染列表内容（不包含 Draggable 包装）
   const renderListContent = (
-    isDragging: boolean = false,
-    dragHandleProps?: DraggableProvidedDragHandleProps | null,
+    provided?: DraggableProvided,
+    snapshot?: DraggableStateSnapshot,
   ) => {
     return (
-      <div
-        className={cn(
-          // 基础样式
-          "rdb:flex rdb:min-w-[280px] rdb:flex-col",
-          "rdb:rounded-lg rdb:border rdb:border-slate-200 rdb:bg-white",
-          "rdb:p-4 rdb:shadow-md",
-          // 拖拽状态样式
-          isDragging && "rdb:opacity-80 rdb:shadow-2xl",
-          // 自定义类名
-          typeof className === "function" ? className(isDragging) : className,
-        )}
-        style={style}
+      <Droppable
+        droppableId={String(data.id)}
+        type="item"
+        isDropDisabled={isDropDisabled}
+        direction={horizontal ? "horizontal" : "vertical"}
       >
-        {/* 列表标题 - 作为拖拽手柄 */}
-        <div
-          {...dragHandleProps}
-          className={cn(
-            // 标题样式
-            isDragEnabled && "active:rdb:cursor-grabbing rdb:cursor-grab",
-            // 如果不可拖拽，使用默认光标
-            !isDragEnabled && "rdb:cursor-default",
-          )}
-        >
-          {headerContent}
-        </div>
-
-        {/* 项目容器 - Droppable 区域 */}
-        <Droppable droppableId={String(list.id)} type="item">
-          {(droppableProvided, droppableSnapshot) => (
+        {(dropProvided, dropSnapshot) => (
+          <div
+            {...dropProvided.droppableProps}
+            className={cn(
+              "rdb:min-w-[280px]",
+              "rdb:rounded-lg rdb:border rdb:border-slate-200 rdb:bg-white",
+              "rdb:shadow-sm rdb:transition-all",
+              snapshot?.isDragging &&
+                "rdb:bg-white/70 rdb:shadow-md rdb:backdrop-blur-lg",
+              typeof className === "function"
+                ? className(
+                    Boolean(dropSnapshot.isDraggingOver),
+                    Boolean(snapshot?.isDragging),
+                  )
+                : className,
+            )}
+            style={style}
+          >
+            {/* Header */}
+            {typeof renderHeader === "function" ? (
+              renderHeader(provided?.dragHandleProps)
+            ) : typeof renderHeader === "boolean" && !renderHeader ? null : (
+              <div
+                {...provided?.dragHandleProps}
+                className={cn(
+                  "rdb:flex rdb:items-center rdb:justify-between rdb:border-b rdb:border-slate-200 rdb:p-4",
+                  typeof classNames.header === "function"
+                    ? classNames.header(
+                        Boolean(dropSnapshot.isDraggingOver),
+                        Boolean(snapshot?.isDragging),
+                      )
+                    : classNames.header,
+                )}
+              >
+                {data.label ? data.label : data.id.toString()}
+              </div>
+            )}
+            {/* Content */}
             <div
-              ref={droppableProvided.innerRef}
-              {...droppableProvided.droppableProps}
+              ref={dropProvided.innerRef}
               className={cn(
-                // 默认样式 - 支持垂直滚动
-                "rdb:flex rdb:min-h-[100px] rdb:flex-col rdb:overflow-y-auto",
-                // 最大高度和滚动
-                "rdb:max-h-[600px]",
-                // 滚动条样式
-                "rdb:scrollbar-thin rdb:scrollbar-thumb-slate-400 rdb:scrollbar-track-transparent",
-                // 圆角和内边距
-                "rdb:rounded rdb:p-1",
-                // 边框 - 默认透明，防止拖拽时抖动
-                "rdb:border rdb:border-transparent",
-                // 拖拽悬停状态
-                droppableSnapshot.isDraggingOver &&
-                  "rdb:border-dashed rdb:border-blue-400 rdb:bg-blue-50",
+                "rdb:flex rdb:p-4",
+                horizontal ? "rdb:flex-row" : "rdb:flex-col",
+                dropSnapshot.isDraggingOver && "",
+                typeof classNames.content === "function"
+                  ? classNames.content(
+                      Boolean(dropSnapshot.isDraggingOver),
+                      Boolean(snapshot?.isDragging),
+                    )
+                  : classNames.content,
               )}
             >
-              {/* 条件渲染优化：只在有项目时渲染 */}
-              {items.length > 0 &&
-                items.map((item, itemIndex) => (
+              {items.map((item, idx) => {
+                const extraItemProps =
+                  typeof itemProps === "function"
+                    ? itemProps(item, idx)
+                    : itemProps;
+
+                return (
                   <DndItem
                     key={item.id}
-                    item={item}
-                    index={itemIndex}
-                    {...itemProps}
+                    data={item}
+                    index={idx}
+                    {...extraItemProps}
                   >
-                    {(item) => itemRenderer(item)}
+                    {(isDragging) =>
+                      renderItem
+                        ? renderItem(item, idx, isDragging)
+                        : renderDefaultItem(item)
+                    }
                   </DndItem>
-                ))}
-              {droppableProvided.placeholder}
+                );
+              })}
+              {dropProvided.placeholder}
             </div>
-          )}
-        </Droppable>
-      </div>
+          </div>
+        )}
+      </Droppable>
     );
   };
 
-  // 11. 独立列表模式：使用 DndContext 包裹，不使用 Draggable
-  if (!isBoardList) {
+  if (isBoardList) {
     return (
-      <DndContext
-        type="list"
-        data={items}
-        onDataChange={(newItems) => {
-          const newList = { ...list, items: newItems };
-          if (isControlled) {
-            onListChange?.(newList);
-          } else {
-            setInternalList(newList);
-          }
-        }}
+      <Draggable
+        draggableId={String(data.id)}
+        index={index}
+        isDragDisabled={isDragDisabled}
       >
-        {renderListContent()}
-      </DndContext>
+        {(provided, snapshot) => (
+          <div ref={provided.innerRef} {...provided.draggableProps}>
+            {renderListContent(provided, snapshot)}
+          </div>
+        )}
+      </Draggable>
     );
   }
 
-  // 12. 看板模式：使用 Draggable 包裹
   return (
-    <Draggable
-      draggableId={String(list.id)}
-      index={index}
-      isDragDisabled={!isDragEnabled}
-    >
-      {(provided, snapshot) => {
-        return (
-          <div ref={provided.innerRef} {...provided.draggableProps}>
-            {renderListContent(snapshot.isDragging, provided.dragHandleProps)}
-          </div>
-        );
-      }}
-    </Draggable>
+    <DndContext type="list" data={items} onDataChange={onItemsChange}>
+      {renderListContent()}
+    </DndContext>
   );
 };

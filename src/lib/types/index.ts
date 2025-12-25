@@ -1,13 +1,16 @@
-// 基础拖拽项，必须有 id
-export type DndItem<T extends object> = T & { id: string | number };
+export interface BaseDndData {
+  id: string | number;
+  label?: string;
+}
 
-// 列表项，可以包含子项
-export type ListItem<T extends object, I extends object> = DndItem<T> & {
-  items?: DndItem<I>[];
+export type BoardList<T extends BaseDndData, S extends BaseDndData> = T & {
+  items?: S[];
 };
 
-// 列表项数组
-export type ListItems<T extends object, I extends object> = ListItem<T, I>[];
+export type DndClassName = string | ((isDragging: boolean) => string);
+export type DroppableClassName =
+  | string
+  | ((isDraggingOver: boolean, isDragging?: boolean) => string);
 
 // 拖拽结果类型
 export interface DragResult {
@@ -21,26 +24,4 @@ export interface DragResult {
     index: number;
   } | null;
   draggableId: string;
-}
-
-// DndBoard 组件 Props
-export interface DndBoardProps<T extends object, I extends object> {
-  initialLists?: ListItems<T, I>;
-  lists?: ListItems<T, I>;
-  onListsChange?: (lists: ListItems<T, I>) => void;
-  onDragEnd?: (result: DragResult) => void;
-
-  className?: string;
-  style?: React.CSSProperties;
-  boardClassName?: string;
-  listClassName?: string;
-  itemClassName?: string;
-
-  renderItem?: (item: DndItem<I>) => React.ReactNode;
-  renderListHeader?: (list: ListItem<T, I>) => React.ReactNode;
-
-  enableListDrag?: boolean | ((list: ListItem<T, I>) => boolean);
-  enableItemDrag?:
-    | boolean
-    | ((item: DndItem<I>, list: ListItem<T, I>) => boolean);
 }

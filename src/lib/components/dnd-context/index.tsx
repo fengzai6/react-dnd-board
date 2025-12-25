@@ -1,4 +1,4 @@
-import type { DragResult } from "@/lib/types";
+import type { BaseDndData, DragResult } from "@/lib/types";
 import {
   arrayMove,
   handleItemDragBetweenLists,
@@ -23,16 +23,27 @@ import {
 import type { ReactNode } from "react";
 
 // 组合 Props
-type DndContextProps<T extends object, I extends object = object> = {
+type DndContextProps<
+  T extends BaseDndData,
+  S extends BaseDndData = BaseDndData,
+> = {
   children: ReactNode;
   // 允许用户覆盖或扩展默认的 onDragEnd 行为
   onDragEnd?: (result: DragResult) => void;
   // 透传给 DragDropContext 的其他 props
-  dragDropContextProps?: Omit<DragDropContextProps, "onDragEnd">;
-} & DndContextModeProps<T, I>;
+  dragDropContextProps?: Omit<DragDropContextProps, "onDragEnd" | "children">;
+} & DndContextModeProps<T, S>;
 
-export const DndContext = <T extends object, I extends object = object>(
-  props: DndContextProps<T, I>
+export type PickedDndContextProps = Pick<
+  DndContextProps<BaseDndData>,
+  "onDragEnd" | "dragDropContextProps"
+>;
+
+export const DndContext = <
+  T extends BaseDndData,
+  I extends BaseDndData = BaseDndData,
+>(
+  props: DndContextProps<T, I>,
 ) => {
   const { children, onDragEnd, dragDropContextProps } = props;
 
@@ -91,7 +102,7 @@ export const DndContext = <T extends object, I extends object = object>(
     // 使用类型守卫函数处理列表模式
     if (isListMode(props)) {
       const newData = arrayMove(props.data, source.index, destination.index);
-      props.onDataChange(newData);
+      props.onDataChange?.(newData);
       return;
     }
 
@@ -100,7 +111,7 @@ export const DndContext = <T extends object, I extends object = object>(
       // 1. 列表本身的排序 (列排序)
       if (dragType === "list") {
         const newData = arrayMove(props.data, source.index, destination.index);
-        props.onDataChange(newData);
+        props.onDataChange?.(newData);
         return;
       }
 
@@ -110,9 +121,9 @@ export const DndContext = <T extends object, I extends object = object>(
           props.data,
           source.droppableId,
           source.index,
-          destination.index
+          destination.index,
         );
-        props.onDataChange(newData);
+        props.onDataChange?.(newData);
       } else {
         // 3. 跨列表的项目移动
         const newData = handleItemDragBetweenLists(
@@ -120,9 +131,9 @@ export const DndContext = <T extends object, I extends object = object>(
           source.droppableId,
           destination.droppableId,
           source.index,
-          destination.index
+          destination.index,
         );
-        props.onDataChange(newData);
+        props.onDataChange?.(newData);
       }
     }
   };

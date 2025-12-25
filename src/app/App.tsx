@@ -2,46 +2,42 @@ import { FeatureDescription } from "./components/feature-description";
 import { SectionWrapper } from "./components/section-wrapper";
 import { TableOfContents } from "./components/table-of-contents";
 import {
-  ConditionalDragExample,
-  ControlledBoardExample,
-  ControlledListExample,
-  CustomRenderExample,
-  DisabledDragExample,
-  EmptyListExample,
-  InvalidDataExample,
-  LargeDataExample,
-  MultiListExample,
-  UncontrolledBoardExample,
-  UncontrolledListExample,
+  BoardCustomRender,
+  BoardExample,
+  ConditionalDrag,
+  DisabledItemDrag,
+  DisabledListDrag,
+  EmptyList,
+  HorizontalListExample,
+  InvalidData,
+  LargeData,
+  ListCustomRender,
+  ListExample,
+  ReadonlyMode,
+  VerticalBoardExample,
 } from "./examples";
 
 const tocItems = [
-  { id: "controlled-board", label: "受控模式 - Board", category: "基础功能" },
-  {
-    id: "uncontrolled-board",
-    label: "非受控模式 - Board",
-    category: "基础功能",
-  },
-  { id: "controlled-list", label: "受控模式 - List", category: "基础功能" },
-  {
-    id: "uncontrolled-list",
-    label: "非受控模式 - List",
-    category: "基础功能",
-  },
-  { id: "custom-render", label: "自定义渲染", category: "高级功能" },
-  { id: "disabled-drag", label: "禁用拖拽", category: "高级功能" },
-  { id: "conditional-drag", label: "条件拖拽", category: "高级功能" },
-  { id: "multi-list", label: "多列表交互", category: "高级功能" },
-  { id: "empty-list", label: "空列表", category: "边界情况" },
-  { id: "invalid-data", label: "无效数据", category: "边界情况" },
-  { id: "large-data", label: "大数据量", category: "边界情况" },
+  { id: "board-example", label: "看板模式", category: "基础用法" },
+  { id: "list-example", label: "垂直列表", category: "基础用法" },
+  { id: "horizontal-list", label: "水平列表", category: "基础用法" },
+  { id: "vertical-board", label: "垂直看板", category: "基础用法" },
+  { id: "board-custom", label: "自定义看板", category: "自定义渲染" },
+  { id: "list-custom", label: "自定义列表", category: "自定义渲染" },
+  { id: "disabled-list", label: "禁用列表拖拽", category: "拖拽控制" },
+  { id: "disabled-item", label: "禁用项目拖拽", category: "拖拽控制" },
+  { id: "conditional", label: "条件拖拽", category: "拖拽控制" },
+  { id: "readonly", label: "只读模式", category: "拖拽控制" },
+  { id: "empty-list", label: "空列表", category: "边界处理" },
+  { id: "large-data", label: "大数据量", category: "边界处理" },
+  { id: "invalid-data", label: "无效数据", category: "边界处理" },
 ];
 
 function App() {
   return (
     <div className="rdb:min-h-screen rdb:bg-linear-to-br rdb:from-slate-50 rdb:to-slate-100">
       <div className="rdb:flex rdb:gap-6 rdb:p-6">
-        {/* 侧边栏 - 组件目录 */}
+        {/* 侧边栏 */}
         <aside className="rdb:sticky rdb:top-6 rdb:h-fit rdb:w-64 rdb:shrink-0 rdb:space-y-4">
           <div className="rdb:rounded-lg rdb:bg-white rdb:p-4 rdb:shadow-sm">
             <h2 className="rdb:mb-3 rdb:text-sm rdb:font-semibold rdb:text-slate-800">
@@ -49,7 +45,6 @@ function App() {
             </h2>
             <TableOfContents items={tocItems} />
           </div>
-
           <FeatureDescription />
         </aside>
 
@@ -65,48 +60,58 @@ function App() {
             </p>
           </header>
 
-          {/* 基础功能示例 */}
-          <SectionWrapper id="basic" title="基础功能">
-            <div id="controlled-board">
-              <ControlledBoardExample />
+          {/* 基础用法 */}
+          <SectionWrapper id="basic" title="基础用法">
+            <div id="board-example">
+              <BoardExample />
             </div>
-            <div id="uncontrolled-board">
-              <UncontrolledBoardExample />
+            <div id="list-example">
+              <ListExample />
             </div>
-            <div id="controlled-list">
-              <ControlledListExample />
+            <div id="horizontal-list">
+              <HorizontalListExample />
             </div>
-            <div id="uncontrolled-list">
-              <UncontrolledListExample />
-            </div>
-          </SectionWrapper>
-
-          {/* 高级功能示例 */}
-          <SectionWrapper id="advanced" title="高级功能">
-            <div id="custom-render">
-              <CustomRenderExample />
-            </div>
-            <div id="disabled-drag">
-              <DisabledDragExample />
-            </div>
-            <div id="conditional-drag">
-              <ConditionalDragExample />
-            </div>
-            <div id="multi-list">
-              <MultiListExample />
+            <div id="vertical-board">
+              <VerticalBoardExample />
             </div>
           </SectionWrapper>
 
-          {/* 边界情况示例 */}
-          <SectionWrapper id="edge-cases" title="边界情况处理">
+          {/* 自定义渲染 */}
+          <SectionWrapper id="custom" title="自定义渲染">
+            <div id="board-custom">
+              <BoardCustomRender />
+            </div>
+            <div id="list-custom">
+              <ListCustomRender />
+            </div>
+          </SectionWrapper>
+
+          {/* 拖拽控制 */}
+          <SectionWrapper id="drag-control" title="拖拽控制">
+            <div id="disabled-list">
+              <DisabledListDrag />
+            </div>
+            <div id="disabled-item">
+              <DisabledItemDrag />
+            </div>
+            <div id="conditional">
+              <ConditionalDrag />
+            </div>
+            <div id="readonly">
+              <ReadonlyMode />
+            </div>
+          </SectionWrapper>
+
+          {/* 边界处理 */}
+          <SectionWrapper id="edge" title="边界处理">
             <div id="empty-list">
-              <EmptyListExample />
-            </div>
-            <div id="invalid-data">
-              <InvalidDataExample />
+              <EmptyList />
             </div>
             <div id="large-data">
-              <LargeDataExample />
+              <LargeData />
+            </div>
+            <div id="invalid-data">
+              <InvalidData />
             </div>
           </SectionWrapper>
         </main>

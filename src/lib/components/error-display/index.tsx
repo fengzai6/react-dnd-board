@@ -1,30 +1,25 @@
 import { cn } from "@/shared/utils/cn";
 
-interface ErrorDisplayProps {
-  componentName: string;
+export interface ErrorDisplayProps {
   error: string;
+  /** 错误标题，默认为 "数据验证" */
+  title?: string;
   className?: string;
 }
 
-export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
-  componentName,
+export const ErrorDisplay = ({
   error,
+  title = "数据验证",
   className,
-}) => {
+}: ErrorDisplayProps) => {
   return (
     <div
       className={cn(
-        // 布局
-        "rdb:rounded-lg rdb:p-4",
-        // 背景和边框
-        "rdb:border rdb:border-red-300 rdb:bg-red-50",
-        // 阴影
-        "rdb:shadow-sm",
+        "rdb:rounded-lg rdb:border rdb:border-red-300 rdb:bg-red-50 rdb:p-4 rdb:shadow-sm",
         className,
       )}
     >
       <div className="rdb:flex rdb:items-start rdb:gap-3">
-        {/* 错误图标 */}
         <div className="rdb:shrink-0">
           <svg
             className="rdb:h-5 rdb:w-5 rdb:text-red-500"
@@ -38,10 +33,9 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
             />
           </svg>
         </div>
-        {/* 错误内容 */}
         <div className="rdb:flex-1">
-          <h3 className="rdb:text-sm rdb:font-semibold rdb:text-red-800">
-            {componentName} 错误
+          <h3 className="rdb:text-sm rdb:font-medium rdb:text-red-800">
+            {title}错误
           </h3>
           <p className="rdb:mt-1 rdb:text-sm rdb:text-red-700">{error}</p>
         </div>

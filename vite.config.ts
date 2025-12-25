@@ -22,7 +22,14 @@ export default defineConfig({
         tsconfigPath: "./tsconfig.app.json",
         insertTypesEntry: true,
         include: ["src/lib/**"],
-        exclude: ["src/test/**", "**/*.test.ts", "**/*.spec.ts"],
+        exclude: [
+          "src/test/**",
+          "**/__tests__/**",
+          "**/*.test.ts",
+          "**/*.test.tsx",
+          "**/*.spec.ts",
+          "**/*.spec.tsx",
+        ],
       }),
   ].filter(Boolean),
   resolve: {
