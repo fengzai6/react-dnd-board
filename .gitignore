@@ -11,6 +11,7 @@ lerna-debug.log*
 node_modules
 packages/*/node_modules
 apps/*/node_modules
+.yarn
 
 # Build outputs
 dist
